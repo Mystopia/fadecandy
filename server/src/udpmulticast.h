@@ -27,5 +27,6 @@ public:
     //UDPMulticast(char* address, int port);
     //void multicastMessage(const OPC::Message &msg);
     //void multicastMessage(const char* &message);
-    int multicastMessage(char* message);
+    //int multicastMessage(char* message);
+    int multicastMessage(const OPC::Message &msg);
 };

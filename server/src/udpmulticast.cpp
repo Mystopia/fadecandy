@@ -83,11 +83,11 @@ UDPMulticast::UDPMulticast()
     //std::cout << "\nSent " << sentBytes << " bytes.";
 }
 
-//void UDPMulticast::multicastMessage(const OPC::Message &msg)
-//void UDPMulticast::multicastMessage(char* &message)
-int UDPMulticast::multicastMessage(char* message)
+int UDPMulticast::multicastMessage(const OPC::Message &msg)
 {
     // Returns number of bytes sent.
+
+
     /*
     std::cout << "  Got frame: \n\tchannel:" << unsigned(msg.channel) 
               << "\n\tcommand:" << unsigned(msg.command)
@@ -107,6 +107,7 @@ int UDPMulticast::multicastMessage(char* message)
     //memcpy(datagram+3, &msg.lenLow,  1    );
     //memcpy(datagram+4, &msg.data,    65535);
     //sendto(outgoingPort, datagram, sizeof(datagram), 0, (struct sockaddr *) &mcastAddress, sizeof(mcastAddress));
+    char* message = "Sending you some pixel lovin";
     std::cout << "Multicasting message: " << message << "\n";
 
     int bytesSent = sendto(this->sock, message, sizeof(message), 0, (struct sockaddr *)&mcastAddress, sizeof(struct sockaddr_in));
