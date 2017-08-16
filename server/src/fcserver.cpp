@@ -26,6 +26,7 @@
 #include "fcdevice.h"
 #include "version.h"
 #include "enttecdmxdevice.h"
+#include "udpmulticast.h"
 #include <ctype.h>
 #include <iostream>
 
@@ -107,6 +108,7 @@ void FCServer::cbOpcMessage(OPC::Message &msg, void *context)
 {
     /*
      * Broadcast the OPC message to all configured devices.
+     * Invoke UDP multicast of message as well.
      */
 
     FCServer *self = static_cast<FCServer*>(context);
@@ -116,8 +118,15 @@ void FCServer::cbOpcMessage(OPC::Message &msg, void *context)
         USBDevice *dev = *i;
         dev->writeMessage(msg);
     }
-
     self->mEventMutex.unlock();
+
+    //const char* address = "255.0.0.51";
+    //int port = 12345;
+    // Using construct on first use idion for static member variable
+    // http://www.parashift.com/c++-faq/static-init-order-on-first-use.html
+    // Object created/initialized only on first use; reused thereafter.
+    static UDPMulticast multicaster;
+    //multicaster.multicastMessage(msg);
 }
 
 int FCServer::cbHotplug(libusb_context *ctx, libusb_device *device, libusb_hotplug_event event, void *user_data)

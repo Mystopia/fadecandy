@@ -30,11 +30,15 @@
 #include <vector>
 #include <libusb.h>
 #include "tinythread.h"
+#include "udpmulticast.h"
+
 
 
 class FCServer
 {
 public:
+    static UDPMulticast multicaster;
+    
     typedef rapidjson::Value Value;
     typedef rapidjson::Document Document;
 

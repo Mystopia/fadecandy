@@ -12,7 +12,8 @@ CPP_FILES += \
 	src/fcserver.cpp \
 	src/version.cpp \
 	src/tinythread.cpp \
-	src/httpdocs.cpp
+	src/httpdocs.cpp \
+	src/udpmulticast.cpp
 
 INCLUDES += -Isrc
 CLEAN_FILES += src/*.d src/*.o src/httpdocs.cpp
