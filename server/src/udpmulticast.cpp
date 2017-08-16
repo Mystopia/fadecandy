@@ -23,9 +23,10 @@ UDPMulticast::UDPMulticast()
     const char* groupAddress = "224.0.51.51"; // Multicast group to join
                int groupPort = 12345;         // Multicast port
                  int matrixW = 64;            // LED matrix size (we can ignore
-                 int matrixH = 64;            // pixels beyond these)
+                 int matrixH = 32;            // pixels beyond these)
                                               // Todo: grab these programmatically
                                               // from FCServer (?)
+                 messageSize = (matrixW * matrixH * 3) + 4;
 
     // Set up UDP socket
     // See http://beej.us/guide/bgnet/output/html/multipage/index.html
@@ -85,33 +86,20 @@ UDPMulticast::UDPMulticast()
 
 int UDPMulticast::multicastMessage(const OPC::Message &msg)
 {
-    // Returns number of bytes sent.
-
-
-    /*
-    std::cout << "  Got frame: \n\tchannel:" << unsigned(msg.channel) 
-              << "\n\tcommand:" << unsigned(msg.command)
-              << "\n\tlenHigh:" << unsigned(msg.lenHigh)
-              << "\n\tlenLow:" << unsigned(msg.lenLow)
-              << "\n\tdata:" << unsigned(msg.data)
-              << "\n";
-    std::cout << "  Size of datagram: " << sizeof(msg) << "\n";
-    */
-    //uint8_t* datagram = new uint8_t[4+65535];
-	//unsigned char* datagram[4+65535];
-    //uint8_t* datagram = new uint8_t[4 + sizeof(msg.data)];
-
-    //memcpy(datagram+0, &msg.channel, 1    );
-    //memcpy(datagram+1, &msg.command, 1    );
-    //memcpy(datagram+2, &msg.lenHigh, 1    );
-    //memcpy(datagram+3, &msg.lenLow,  1    );
-    //memcpy(datagram+4, &msg.data,    65535);
-    //sendto(outgoingPort, datagram, sizeof(datagram), 0, (struct sockaddr *) &mcastAddress, sizeof(mcastAddress));
-    char* message = "Sending you some pixel lovin";
-    std::cout << "Multicasting message: " << message << "\n";
-
-    int bytesSent = sendto(this->sock, message, sizeof(message), 0, (struct sockaddr *)&mcastAddress, sizeof(struct sockaddr_in));
+    // Pack OPC message struct into a bytestream:
+    //unsigned char* datagram[this->messageSize];
+    uint8_t* datagram[this->messageSize];
+    memcpy(datagram+0, &msg.channel, 1    );
+    memcpy(datagram+1, &msg.command, 1    );
+    memcpy(datagram+2, &msg.lenHigh, 1    );
+    memcpy(datagram+3, &msg.lenLow,  1    );
+    memcpy(datagram+4, &msg.data, (this->messageSize - 4));
+    
+    // Send over UDP socket
+    int bytesSent = sendto(this->sock, datagram, this->messageSize, 0, (struct sockaddr *)&mcastAddress, sizeof(struct sockaddr_in));
     std::cout << "Sent " << bytesSent << " bytes.\n";
+    
+    // Return number of bytes sent.
     return bytesSent;
 }
 
