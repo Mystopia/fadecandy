@@ -31,6 +31,8 @@
 #include <iostream>
 
 
+bool FCServer::multicastEnabled = false;
+
 FCServer::FCServer(rapidjson::Document &config)
     : mConfig(config),
       mListen(config["listen"]),
@@ -42,6 +44,13 @@ FCServer::FCServer(rapidjson::Document &config)
       mUSBHotplugThread(0),
       mUSB(0)
 {
+    /* Initialize multicast
+     */
+
+    multicastEnabled = (config["multicastEnabled"].GetBool());
+    if (multicastEnabled == true) std::cout << "Hi there multicast!\n";
+    else std::cout << "No multicast for you.\n";
+
     /*
      * Validate the listen [host, port] list.
      */
@@ -108,7 +117,7 @@ void FCServer::cbOpcMessage(OPC::Message &msg, void *context)
 {
     /*
      * Broadcast the OPC message to all configured devices.
-     * Invoke UDP multicast of message as well.
+     * Send as UDP multicast if declared in config.
      */
 
     FCServer *self = static_cast<FCServer*>(context);
@@ -124,7 +133,9 @@ void FCServer::cbOpcMessage(OPC::Message &msg, void *context)
     // http://www.parashift.com/c++-faq/static-init-order-on-first-use.html
     // Object created/initialized only on first use; reused thereafter.
     static UDPMulticast multicaster;
-    multicaster.multicastMessage(msg);
+    if (multicastEnabled){
+        multicaster.multicastMessage(msg);
+    }
 }
 
 int FCServer::cbHotplug(libusb_context *ctx, libusb_device *device, libusb_hotplug_event event, void *user_data)

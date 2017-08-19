@@ -38,6 +38,7 @@ class FCServer
 {
 public:
     static UDPMulticast multicaster;
+    static bool multicastEnabled;
     
     typedef rapidjson::Value Value;
     typedef rapidjson::Document Document;
