@@ -122,6 +122,7 @@ set(SRC
     "${PROJECT_SOURCE_DIR}/src/version.cpp"
     "${PROJECT_SOURCE_DIR}/src/tinythread.cpp"
     "${PROJECT_BINARY_DIR}/httpdocs.cpp"
+    "${PROJECT_BINARY_DIR}/udpmulticast.cpp"
     )
 
 source_group("Fadecandy Sources" FILES ${SRC})
